@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>اختبار ديني</title>
+<style>
+body {
+  font-family: 'Amiri', serif; /* خط عربي */
+  background-image: url("https://i.imgur.com/Y5FCdi5.jpg"); /* رابط الصورة  */
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: #2f4f4f; /* لون الخط */
+  text-align: center; /* محاذاة النص في الوسط */
+}
+h1 {
+  font-size: 40px;
+  margin-top: 30px;
+  margin-bottom: 50px;
+  color: #006400; /* لون العنوان */
+  text-shadow: 2px 2px 3px #bdbdbd; /* ظل للعنوان */
+}
+.question {
+  background-color: rgba(255, 255, 255, 0.8); /* خلفية بيضاء شفافة */
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 5px 5px 10px #888888; /* ظل */
+}
+.question h2 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  color: #008080; /* لون السؤال */
+}
+.options label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 18px;
+  cursor: pointer; /* مؤشر الماوس على شكل يد */
+}
+.options label:hover {
+  background-color: #f0f8ff; /* لون الخلفية عند التحويم */
+}
+input[type="radio"] {
+  margin-right: 10px;
+}
+button {
+  background-color: #2e8b57; /* لون الزر */
+  color: white;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 5px;
+  font-size: 20px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+button:hover {
+  background-color: #3cb371; /* لون الزر عند التحويم */
+}
+#timer {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #006400; /* لون المؤقت */
+}
+#result {
+  font-size: 28px;
+  margin-top: 30px;
+  color: #006400; /* لون النتيجة */
+}
+#name-input {
+  margin-top: 20px;
+  display: none; /* إخفاء حقل الاسم في البداية */
+}
+#name-input input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 18px;
+  margin-right: 10px;
+}
+#name-input button {
+  padding: 10px 20px;
+}
+.hidden {
+  display: none;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<h1>اختبار ديني</h1>
+
+<div id="timer"></div>
+<div id="quiz"></div>
+
+<button onclick="checkAnswers()">عرض النتيجة</button>
+
+<p id="result"></p>
+
+<div id="name-input">
+  <input type="text" id="player-name" placeholder="ادخل اسمك">
+  <button onclick="saveName()">حفظ</button>
+</div>
+
+<script>
+// ... (مصفوفة الأسئلة   )
+const questions = [
+ // القرآن الكريم
+ {
+    question: "ما معنى اسم سورة 'الكهف'؟",
+    options: ["نسبةً لأصحاب الكهف", "نسبةً لمكان الكهف", "لا معنى محدد", "اسم أحد الأنبياء"],
+    answer: 0
+  },
+  {
+    question: "ما هي السورة التي تُعرف بـ 'عروس القرآن'؟",
+    options: ["الرحمن", "البقرة", "الملك", "الواقعة"],
+    answer: 0
+  },
+  {
+    question: "أي سورة تُعرف بـ'الساهرة'؟",
+    options: ["النازعات", "المدثر", "الفجر", "الضحى"],
+    answer: 0
+  },
+  {
+    question: "ما هي السورة التي تعادل قراءتها ثلث القرآن؟",
+    options: ["الإخلاص", "الفلق", "الناس", "الفاتحة"],
+    answer: 0
+  },
+  {
+    question: "كم عدد سور القرآن الكريم؟",
+    options: ["114", "110", "120", "100"],
+    answer: 0
+  },
+  {
+    question: "ما هي أطول سورة في القرآن؟",
+    options: ["البقرة", "آل عمران", "النساء", "المائدة"],
+    answer: 0
+  },
+  {
+    question: "ما هي أقصر سورة في القرآن؟",
+    options: ["الكوثر", "الإخلاص", "الفلق", "الناس"],
+    answer: 0
+  },
+  {
+    question: "ما هو سبب نزول سورة المسد؟",
+    options: ["ردًا على أبي لهب", "ردًا على اليهود", "قصة أصحاب الفيل", "لا سبب محدد"],
+    answer: 0
+  },
+  {
+    question: "ما سبب نزول سورة الإخلاص؟",
+    options: ["ردًا على سؤال اليهود عن صفة الله", "ردًا على أبي لهب", "قصة أصحاب الفيل", "لا سبب محدد"],
+    answer: 0
+  },
+  {
+    question: "لماذا نزلت سورة الفيل؟",
+    options: ["لذكر قصة أصحاب الفيل", "ردًا على اليهود", "ردًا على أبي لهب", "لا سبب محدد"],
+    answer: 0
+  },
+  {
+    question: "ما هو حكم النون الساكنة والتنوين إذا جاء بعدهما حرف الباء؟",
+    options: ["الإقلاب", "الإظهار", "الإدغام", "الإخفاء"],
+    answer: 0
+  },
+  {
+    question: "ما هي حروف الإدغام؟",
+    options: ["يرملون", "قطب جد", "أحرف الحلق", "لا توجد حروف محددة"],
+    answer: 0
+  },
+  {
+    question: "ما هو الفرق بين المد الطبيعي والمد الفرعي؟",
+    options: ["المد الطبيعي حركتان والفرعي أكثر", "لا فرق بينهما", "المد الطبيعي في الحروف والفرعي في الكلمات", "المد الطبيعي في أول الكلمة والفرعي في آخرها"],
+    answer: 0
+  },
+  {
+    question: "كم عدد مخارج الحروف؟",
+    options: ["17 مخرج على الرأي المختار", "15 مخرج", "20 مخرج", "10 مخارج"],
+    answer: 0
+  },
+
+  // السيرة النبوية
+  {
+    question: "في أي عام وُلد النبي محمد صلى الله عليه وسلم؟",
+    options: ["عام الفيل", "عام الحزن", "عام الهجرة", "عام الوفود"],
+    answer: 0
+  },
+  {
+    question: "ما هو الحدث الذي وقع في السنة الخامسة من البعثة؟",
+    options: ["الهجرة إلى الحبشة", "الإسراء والمعراج", "بيعة العقبة", "فتح مكة"],
+    answer: 0
+  },
+  {
+    question: "ما اسم المعركة التي وقعت بين المسلمين وقريش في السنة الثانية للهجرة؟",
+    options: ["معركة بدر", "معركة أحد", "معركة الخندق", "معركة اليرموك"],
+    answer: 0
+  },
+  {
+    question: "من هي أول زوجات النبي محمد صلى الله عليه وسلم؟",
+    options: ["خديجة بنت خويلد", "عائشة بنت أبي بكر", "سودة بنت زمعة", "حفصة بنت عمر"],
+    answer: 0
+  },
+  {
+    question: "كم عدد زوجات النبي محمد صلى الله عليه وسلم؟",
+    options: ["11 أو 13 على اختلاف الأقوال", "9", "15", "7"],
+    answer: 0
+  },
+  {
+    question: "ما اسم ابن النبي الذي مات في حياته؟",
+    options: ["إبراهيم", "القاسم", "عبد الله", "لا يوجد"],
+    answer: 0
+  },
+  {
+    question: "بماذا كان يُلقب النبي محمد صلى الله عليه وسلم قبل البعثة؟",
+    options: ["الصادق الأمين", "الكريم", "الشجاع", "الحكيم"],
+    answer: 0
+  },
+  {
+    question: "ما هي الصفة التي اشتهر بها النبي محمد صلى الله عليه وسلم؟",
+    options: ["الرحمة", "الشجاعة", "الكرم", "العدل"],
+    answer: 0
+  },
+  {
+    question: "اذكر حديثًا شريفًا يدل على حسن خلق النبي صلى الله عليه وسلم.",
+    options: ["إنما بعثت لأتمم مكارم الأخلاق", "لا ضرر ولا ضرار", "من غشنا فليس منا", "الدين النصيحة"],
+    answer: 0
+  },
+  {
+    question: "ما هي أعظم معجزات النبي محمد صلى الله عليه وسلم؟",
+    options: ["القرآن الكريم", "الإسراء والمعراج", "انشقاق القمر", "نبع الماء من بين أصابعه"],
+    answer: 0
+  },
+  {
+    question: "اذكر معجزة من معجزات النبي محمد صلى الله عليه وسلم.",
+    options: ["الإسراء والمعراج", "إحياء الموتى", "تحويل العصا إلى ثعبان", "خلق طير من الطين"],
+    answer: 0
+  },
+  
+  // العقيدة الإسلامية
+  {
+    question: "كم عدد أركان الإيمان؟",
+    options: ["ستة", "خمسة", "سبعة", "أربعة"],
+    answer: 0
+  },
+  {
+    question: "ما هو الركن الأول من أركان الإيمان؟",
+    options: ["الإيمان بالله", "الإيمان بالملائكة", "الإيمان بالكتب", "الإيمان بالرسل"],
+    answer: 0
+  },
+  {
+    question: "ما معنى الإيمان باليوم الآخر؟",
+    options: ["الإيمان بالبعث والحساب والجنة والنار", "الإيمان بالقضاء والقدر", "الإيمان بالملائكة", "الإيمان بالرسل"],
+    answer: 0
+  },
+  {
+    question: "هل لله تعالى مثيل؟",
+    options: ["لا، ليس كمثله شيء", "نعم، له مثيل", "لا نعرف", "الله أعلم"],
+    answer: 0
+  },
+  {
+    question: "ما معنى اسم الله 'الرحمن'؟",
+    options: ["ذو الرحمة الواسعة", "القوي", "العليم", "الحكيم"],
+    answer: 0
+  },
+  {
+    question: "ما معنى اسم الله 'القدوس'؟",
+    options: ["المنزه عن كل نقص", "الكريم", "الرزاق", "الغفور"],
+    answer: 0
+  },
+  {
+    question: "ما هو الكتاب الذي أُنزل على موسى عليه السلام؟",
+    options: ["التوراة", "الإنجيل", "الزبور", "القرآن"],
+    answer: 0
+  },
+  {
+    question: "ما هو الكتاب الذي أُنزل على عيسى عليه السلام؟",
+    options: ["الإنجيل", "التوراة", "الزبور", "القرآن"],
+    answer: 0
+  },
+  {
+    question: "ما هو آخر الكتب السماوية؟",
+    options: ["القرآن الكريم", "الإنجيل", "التوراة", "الزبور"],
+    answer: 0
+  },
+  {
+    question: "من هو خاتم الأنبياء والمرسلين؟",
+    options: ["محمد صلى الله عليه وسلم", "عيسى عليه السلام", "موسى عليه السلام", "إبراهيم عليه السلام"],
+    answer: 0
+  },
+  {
+    question: "من هم أولو العزم من الرسل؟",
+    options: ["نوح، إبراهيم، موسى، عيسى، محمد عليهم السلام", "آدم، إدريس، نوح، هود، صالح", "إسماعيل، إسحاق، يعقوب، يوسف", "أيوب، شعيب، يونس، يحيى"],
+    answer: 0
+  },
+  {
+    question: "من هو النبي الذي أُرسل إلى قوم ثمود؟",
+    options: ["صالح عليه السلام", "هود عليه السلام", "شعيب عليه السلام", "لوط عليه السلام"],
+    answer: 0
+  },
+
+  // الفقه الإسلامي
+  {
+    question: "ما هي شروط صحة الصلاة؟",
+    options: ["الإسلام، العقل، البلوغ، الطهارة، استقبال القبلة وغيرها", "الركوع والسجود فقط", "قراءة الفاتحة فقط", "النية فقط"],
+    answer: 0
+  },
+  {
+    question: "ما هي مبطلات الصيام؟",
+    options: ["الأكل والشرب عمدًا، والجماع في نهار رمضان، وغيرها", "الكلام", "النوم", "لا شيء يبطل الصيام"],
+    answer: 0
+  },
+  {
+    question: "على من تجب الزكاة؟",
+    options: ["على المسلم الحر المالك للنصاب", "على الجميع", "على الأغنياء فقط", "على الفقراء فقط"],
+    answer: 0
+  },
+  {
+    question: "ما هي أركان الحج؟",
+    options: ["الإحرام، الوقوف بعرفة، طواف الإفاضة، السعي بين الصفا والمروة", "رمي الجمرات فقط", "الحلق أو التقصير فقط", "المبيت بمنى فقط"],
+    answer: 0
+  },
+  {
+    question: "ما هي أنواع المياه التي يصح التطهر بها؟",
+    options: ["الماء المطلق", "الماء المالح فقط", "ماء المطر فقط", "أي ماء"],
+    answer: 0
+  },
+  {
+    question: "ما حكم تارك الصلاة عمدًا؟",
+    options: ["كافر على تفصيل بين العلماء", "مسلم", "لا إثم عليه", "الله أعلم"],
+    answer: 0
+  },
+  {
+    question: "ما حكم أكل لحم الخنزير؟",
+    options: ["حرام", "حلال", "مكروه", "مباح"],
+    answer: 0
+  },
+  {
+    question: "ما حكم الربا؟",
+    options: ["حرام", "حلال", "مكروه", "مباح"],
+    answer: 0
+  },
+  {
+    question: "ما حكم الكذب؟",
+    options: ["حرام إلا في حالات معينة", "حلال", "مكروه", "مباح"],
+    answer: 0
+  },
+  {
+    question: "ما هو تعريف البيع في الإسلام؟",
+    options: ["مبادلة مال بمال", "إعطاء شيء دون مقابل", "أخذ شيء دون حق", "لا تعريف محدد"],
+    answer: 0
+  },
+  {
+    question: "ما هي شروط صحة عقد الزواج؟",
+    options: ["الإيجاب والقبول، الولي، الشهود، وغيرها", "المال فقط", "الحب فقط", "لا شروط محددة"],
+    answer: 0
+  },
+  {
+    question: "ما حكم الغش في البيع؟",
+    options: ["حرام", "حلال", "مكروه", "مباح"],
+    answer: 0
+  },
+  //الصحابة
+  {
+    question: "من هم العشرة المبشرون بالجنة؟",
+    options: ["أبو بكر، عمر، عثمان، علي، طلحة، الزبير، سعد بن أبي وقاص، سعيد بن زيد، عبد الرحمن بن عوف، أبو عبيدة بن الجراح", "لا يوجد", "خمسة فقط", "الله اعلم"],
+    answer: 0
+  },
+  {
+    question: "من هو الصحابي الملقب بـ 'الفاروق'؟",
+    options: ["عمر بن الخطاب", "علي بن ابي طالب", "عثمان بن عفان", "ابو بكر"],
+    answer: 0
+  },
+  {
+    question: "من هو الصحابي الملقب بـ 'ذي النورين'؟",
+    options: ["عثمان بن عفان", "علي بن ابي طالب", "عمر بن الخطاب", "ابو بكر"],
+    answer: 0
+  },
+  {
+    question: "اذكر حديثًا عن فضل أبي بكر الصديق.",
+    options: ["ما طلعت شمس على رجل خير من أبي بكر", "لا يوجد", "الله اعلم", "لا اعرف"],
+    answer: 0
+  },
+  {
+    question: "ما هي الصفة التي اشتهر بها علي بن أبي طالب؟",
+    options: ["الشجاعة", "الكرم", "العلم", "الذكاء"],
+    answer: 0
+  },
+  {
+    question: "ما هو الموقف الذي يدل على عدل عمر بن الخطاب؟",
+    options: ["كثيرة، منها قصته مع المرأة التي كانت تغلي الحصى لأطفالها", "لا يوجد", "الله اعلم", "لا اعرف"],
+    answer: 0
+  },
+  {
+    question: "ما هو الموقف الذي يدل على حياء عثمان بن عفان؟",
+    options: ["كانت الملائكة تستحي منه", "لا يوجد", "الله اعلم", "لا اعرف"],
+    answer: 0
+  },
+];
+let currentQuestion = 0;
+let score = 0;
+let timeLeft = 120;
+let timerId;
+let playerName = "";
+
+const quizContainer = document.getElementById('quiz');
+const resultContainer = document.getElementById('result');
+const timerContainer = document.getElementById('timer');
+const nameInputContainer = document.getElementById('name-input');
+const playerNameInput = document.getElementById('player-name');
+
+function buildQuiz() {
+  if (currentQuestion < questions.length) {
+    const question = questions[currentQuestion];
+    let output = `
+      <div class="question">
+        <h2>${currentQuestion + 1}. ${question.question}</h2>
+        <div class="options">
+    `;
+
+    question.options.forEach((option, optionIndex) => {
+      output += `
+        <label>
+          <input type="radio" name="question" value="${optionIndex}">
+          ${option}
+        </label>
+      `;
+    });
+
+    output += `
+        </div>
+      </div>
+    `;
+
+    quizContainer.innerHTML = output;
+  } else {
+    endQuiz();
+  }
+}
+
+function checkAnswers() {
+  const selectedOption = document.querySelector(`input[name="question"]:checked`);
+
+  if (selectedOption) {
+    const selectedAnswer = parseInt(selectedOption.value);
+    if (selectedAnswer === questions[currentQuestion].answer) {
+      score++;
+    }
+  }
+
+  currentQuestion++;
+  buildQuiz();
+}
+
+function startTimer() {
+  timerId = setInterval(() => {
+    timeLeft--;
+    timerContainer.innerHTML = `الوقت المتبقي: ${timeLeft} ثانية`;
+
+    if (timeLeft <= 0) {
+      endQuiz();
+    }
+  }, 1000);
+}
+
+function endQuiz() {
+  clearInterval(timerId);
+  quizContainer.innerHTML = '';
+  resultContainer.innerHTML = `لقد حصلت على ${score} من ${questions.length}`;
+  nameInputContainer.style.display = "block"; // إظهار حقل الاسم
+}
+
+function saveName() {
+  playerName = playerNameInput.value;
+  if (playerName.trim() !== "") {
+    resultContainer.innerHTML += `<br> ${playerName}`;
+    nameInputContainer.classList.add("hidden"); // إخفاء حقل الاسم بعد حفظ الاسم
+  } else {
+    alert("الرجاء إدخال اسمك!");
+  }
+}
+
+// اختيار 10 أسئلة عشوائية
+questions.sort(() => 0.5 - Math.random());
+questions.length = 10;
+
+buildQuiz();
+startTimer();
+</script>
+
+</body>
+</html>
